@@ -8,6 +8,10 @@ parameters:
   required: true
 - name: LOCAL_IMAGE_BIN
   required: true
+- name: TEST_IMAGE
+  required: true
+- name: TEST_EXEC
+  value: make e2e
 - name: IMAGE_SYNC
   required: true
 - name: IMAGE_LOGBRIDGE
@@ -61,7 +65,7 @@ objects:
 
     # Once admin.kubeconfig exists, executes shared tests
     - name: test
-      image: ${LOCAL_IMAGE_BIN}
+      image: ${TEST_IMAGE}
       resources:
         requests:
           cpu: 1
@@ -81,6 +85,8 @@ objects:
         value: /tmp/shared/home
       - name: TEST_IN_PRODUCTION
         value: ${TEST_IN_PRODUCTION}
+      - name: TEST_EXEC
+        value: ${TEST_EXEC}
       command:
       - /bin/bash
       - -c
@@ -118,7 +124,7 @@ objects:
         # don't let clients impact the global kubeconfig
         cp -r /tmp/shared/_data /go/src/github.com/openshift/openshift-azure/
         cd /go/src/github.com/openshift/openshift-azure/
-        make e2e
+        ${TEST_EXEC}
 
     # Runs an install
     - name: setup
